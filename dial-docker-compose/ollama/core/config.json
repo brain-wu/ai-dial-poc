@@ -1,9 +1,14 @@
 {
   "routes": {},
   "models": {
-    "chat-model": {
+    "qwen:0.5b": {
       "type": "chat",
-      "displayName": "Self-hosted chat model",
+      "displayName": "qwen chat model",
+      "endpoint": "http://ollama:11434/v1/chat/completions"
+    },
+    "llama3.1:8b-instruct-q4_0": {
+      "type": "chat",
+      "displayName": "llama3.1 chat model",
       "endpoint": "http://ollama:11434/v1/chat/completions"
     },
     "vision-model": {
@@ -35,7 +40,8 @@
   "roles": {
     "default": {
       "limits": {
-        "chat-model": {},
+        "qwen:0.5b": {},
+        "llama3.1:8b-instruct-q4_0": {},
         "vision-model": {},
         "embedding-model": {}
       }

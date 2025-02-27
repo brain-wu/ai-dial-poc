@@ -13,13 +13,15 @@ OLLAMA_URL = os.getenv("OLLAMA_URL")
 if OLLAMA_URL is None:
     raise RuntimeError("OLLAMA_URL env var isn't set")
 
-OLLAMA_CHAT_MODEL = os.getenv("OLLAMA_CHAT_MODEL")
+OLLAMA_CHAT_MODELS = os.getenv("OLLAMA_CHAT_MODELS")
 OLLAMA_VISION_MODEL = os.getenv("OLLAMA_VISION_MODEL")
 OLLAMA_EMBEDDING_MODEL = os.getenv("OLLAMA_EMBEDDING_MODEL")
 
 
+# 等待启动的异步函数
 async def wait_for_startup():
     attempts = 0
+    #循环尝试连接到Ollama服务，每次尝试失败后等待5秒，并输出具体的等待信息
     while True:
         attempts += 1
         try:
@@ -68,7 +70,7 @@ async def pull_model(client: AsyncClient, model: str):
 
 async def startup():
     print_info(f"OLLAMA_URL = {OLLAMA_URL}")
-    print_info(f"OLLAMA_CHAT_MODEL = {OLLAMA_CHAT_MODEL}")
+    print_info(f"OLLAMA_CHAT_MODELS = {OLLAMA_CHAT_MODELS}")
     print_info(f"OLLAMA_VISION_MODEL = {OLLAMA_VISION_MODEL}")
     print_info(f"OLLAMA_EMBEDDING_MODEL = {OLLAMA_EMBEDDING_MODEL}")
 
@@ -77,21 +79,22 @@ async def startup():
     async with timer("Waiting for Ollama to start"):
         await wait_for_startup()
 
-    for model, alias in [
-        (OLLAMA_CHAT_MODEL, "chat-model"),
-        (OLLAMA_VISION_MODEL, "vision-model"),
-        (OLLAMA_EMBEDDING_MODEL, "embedding-model"),
-    ]:
-        if model:
-            async with timer(f"Pulling model {model}"):
-                await pull_model(client, model)
+    chat_models = OLLAMA_CHAT_MODELS.split(',') if OLLAMA_CHAT_MODELS else []
+    
+    for model in chat_models:
+        async with timer(f"Pulling chat model {model}"):
+            await pull_model(client, model)
+        
+        # 创建别名
+        alias = model.replace(':', '-') + "-alias"  # 自动创建基于模型名称和版本的别名
+        async with timer(f"Creating alias for model"):
+            await client.copy(model, model)
 
-            async with timer(f"Creating alias for {model}: {alias}"):
-                await client.copy(model, alias)
-
-    if model_to_load := (OLLAMA_CHAT_MODEL or OLLAMA_VISION_MODEL):
-        async with timer(f"Loading model {model_to_load} into memory"):
-            await client.generate(model_to_load)
+    # 加载模型到内存
+    if chat_models:
+        async with timer(f"Loading chat model {chat_models[0]} into memory"):
+            await client.generate(chat_models[0])
+            await client.generate(chat_models[1])
 
     print_info("The Ollama server is up and running.")
 
