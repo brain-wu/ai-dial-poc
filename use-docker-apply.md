@@ -22,7 +22,7 @@ podman machine start
 
 cd ai-dial/dial-docker-compose/ollama
 ### 2.选择要运行的模型
-按照 Ollama Search (https://ollama.com/search)中的特征标签（Embeddings、Code、Tools、Vision）找到合适的模型。
+按照 Ollama Search(https://ollama.com/search) 中的特征标签（Embeddings、Code、Tools、Vision）找到合适的模型。
 ### 3. 启动AI DIAL Chat
 #### 3.1 根据您选择的模型类型在当前目录中配置 .env 文件：
 •	为文本模型的名称设置 OLLAMA_CHAT_MODEL。
