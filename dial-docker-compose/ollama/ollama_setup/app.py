@@ -18,10 +18,8 @@ OLLAMA_VISION_MODEL = os.getenv("OLLAMA_VISION_MODEL")
 OLLAMA_EMBEDDING_MODEL = os.getenv("OLLAMA_EMBEDDING_MODEL")
 
 
-# 等待启动的异步函数
 async def wait_for_startup():
     attempts = 0
-    #循环尝试连接到Ollama服务，每次尝试失败后等待5秒，并输出具体的等待信息
     while True:
         attempts += 1
         try:
@@ -85,12 +83,10 @@ async def startup():
         async with timer(f"Pulling chat model {model}"):
             await pull_model(client, model)
         
-        # 创建别名
-        alias = model.replace(':', '-') + "-alias"  # 自动创建基于模型名称和版本的别名
+        alias = model.replace(':', '-') + "-alias" 
         async with timer(f"Creating alias for model"):
             await client.copy(model, model)
 
-    # 加载模型到内存
     if chat_models:
         async with timer(f"Loading chat model {chat_models[0]} into memory"):
             await client.generate(chat_models[0])
