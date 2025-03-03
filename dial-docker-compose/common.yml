@@ -13,6 +13,10 @@ services:
       - core
     environment:
       NEXTAUTH_SECRET: "secret"
+      AUTH_AZURE_AD_CLIENT_ID: "<azure_client_id>"
+      AUTH_AZURE_AD_TENANT_ID: "<azure_tenant_id>"
+      AUTH_AZURE_AD_SECRET: "<azure_client_secret>"
+      AUTH_AZURE_AD_SCOPE: "openid profile <azure_client_id>/.default email offline_access"
       THEMES_CONFIG_HOST: "http://themes:8080"
       DIAL_API_HOST: "http://core:8080"
       DIAL_API_KEY: "dial_api_key"
@@ -46,6 +50,11 @@ services:
       'aidial.config.files': '["/opt/config/config.json"]'
       'aidial.storage.overrides': '{ "jclouds.filesystem.basedir": "data" }'
       'aidial.redis.singleServerConfig.address': 'redis://redis:6379'
+      'aidial.identityProviders.azure.jwksUrl': "https://login.microsoftonline.com/<azure_tenant_id>/discovery/v2.0/keys"
+      'aidial.identityProviders.azure.rolePath': "groups"
+      'aidial.identityProviders.azure.issuerPattern': '^https:\/\/sts\.windows\.net.+$'
+      'aidial.identityProviders.azure.loggingKey': "sub"
+      'aidial.identityProviders.azure.loggingSalt': "loggingSalt"
     depends_on:
       - redis
     volumes:
